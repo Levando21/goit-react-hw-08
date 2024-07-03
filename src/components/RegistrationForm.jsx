@@ -1,10 +1,9 @@
 /** @format */
 
-import { ErrorMessage, Field, Formik } from "formik";
+import { Field, Formik, Form, ErrorMessage } from "formik";
 import { useDispatch } from "react-redux";
 import * as Yup from "yup";
 import { register } from "../redux/auth/operations";
-import { Form } from "react-router-dom";
 
 const validationSchema = Yup.object({
 	name: Yup.string().required("Required"),
@@ -17,23 +16,33 @@ const validationSchema = Yup.object({
 const RegistrationForm = () => {
 	const dispatch = useDispatch();
 
-	const handleSubmit = (values, { setSubmitting }) => {
-		dispatch(register(values));
-		setSubmitting(false);
+	const handleSubmit = (values, { resetForm }) => {
+		console.log("Submitting values:", values);
+		dispatch(register(values))
+			.unwrap()
+			.then(() => {
+				console.log("Registration successful! Welcome!");
+			})
+			.catch((error) => {
+				console.error("Registration error. Please try again.", error);
+			});
+		resetForm();
 	};
 
 	return (
-		<Formik
-			initialValues={{ name: "", email: "", password: "" }}
-			validationSchema={validationSchema}
-			onSubmit={handleSubmit}>
-			{({ isSubmitting }) => (
-				<Form>
+		<div>
+			<h2>Register,please!</h2>
+			<Formik
+				initialValues={{ name: "", email: "", password: "" }}
+				validationSchema={validationSchema}
+				onSubmit={handleSubmit}>
+				<Form autoComplete="off">
 					<div>
 						<label htmlFor="name">Name</label>
 						<Field
 							type="text"
 							name="name"
+							id="name"
 						/>
 						<ErrorMessage
 							name="name"
@@ -45,6 +54,7 @@ const RegistrationForm = () => {
 						<Field
 							type="email"
 							name="email"
+							id="email"
 						/>
 						<ErrorMessage
 							name="email"
@@ -56,20 +66,17 @@ const RegistrationForm = () => {
 						<Field
 							type="password"
 							name="password"
+							id="password"
 						/>
 						<ErrorMessage
 							name="password"
 							component="div"
 						/>
 					</div>
-					<button
-						type="submit"
-						disabled={isSubmitting}>
-						Register
-					</button>
+					<button type="submit">Register</button>
 				</Form>
-			)}
-		</Formik>
+			</Formik>
+		</div>
 	);
 };
 

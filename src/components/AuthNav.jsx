@@ -1,13 +1,13 @@
 /** @format */
 
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const AuthNav = () => {
 	return (
-		<div className="flex">
-			<Link to="/login">Log In</Link>
-			<Link to="/register">Register</Link>
-		</div>
+		<nav>
+			<NavLink to="/register">Register</NavLink>
+			<NavLink to="/login">Login</NavLink>
+		</nav>
 	);
 };
 

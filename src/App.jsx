@@ -1,47 +1,68 @@
 /** @format */
 import { Route, Routes } from "react-router-dom";
-import AppBar from "./components/AppBar";
-import { Suspense, lazy } from "react";
-import AuthNav from "./components/AuthNav";
-
+import { useDispatch, useSelector } from "react-redux";
+import { lazy, useEffect } from "react";
+import Layout from "./components/Layout";
+import RestrictedRoute from "./components/RestrictedRoute";
+import PrivateRoute from "./components/PrivateRoute";
+import { selectIsRefreshing } from "./redux/auth/selectors";
+import { refreshUser } from "./redux/auth/operations";
+import { Toaster } from "react-hot-toast";
 const HomePage = lazy(() => import("./pages/HomePage"));
 const ContactsPage = lazy(() => import("./pages/ContactsPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const RegistrationPage = lazy(() => import("./pages/RegistrationPage"));
 
 const App = () => {
-	return (
-		<div>
-			<AppBar />
-			<Suspense fallback={null}>
-				<Routes>
-					<Route
-						path="/"
-						element={<HomePage />}
-					/>
-					<Route
-						path="/auth"
-						element={<AuthNav />}>
-						<Route
-							path="login"
-							element={<LoginPage />}
+	const dispatch = useDispatch();
+	const isRefreshing = useSelector(selectIsRefreshing);
+
+	useEffect(() => {
+		dispatch(refreshUser());
+	}, [dispatch]);
+
+	return isRefreshing ? (
+		<b>Refreshing user...</b>
+	) : (
+		<Layout>
+			<Toaster
+				position="top-center"
+				reverseOrder={false}
+			/>
+			<Routes>
+				<Route
+					path="/"
+					element={<HomePage />}
+				/>
+				<Route
+					path="/register"
+					element={
+						<RestrictedRoute
+							redirectTo="/contacts"
+							component={<RegistrationPage />}
 						/>
-						<Route
-							path="register"
-							element={<RegistrationPage />}
+					}
+				/>
+				<Route
+					path="/login"
+					element={
+						<RestrictedRoute
+							redirectTo="/contacts"
+							component={<LoginPage />}
 						/>
-					</Route>
-					<Route
-						path="/contacts"
-						element={<ContactsPage />}
-					/>
-					<Route
-						path="*"
-						element={<div>404</div>}
-					/>
-				</Routes>
-			</Suspense>
-		</div>
+					}
+				/>
+				<Route
+					path="/contacts"
+					element={
+						<PrivateRoute
+							redirectTo="/login"
+							component={<ContactsPage />}
+						/>
+					}
+				/>
+			</Routes>
+		</Layout>
 	);
 };
 
