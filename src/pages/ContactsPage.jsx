@@ -18,7 +18,7 @@ const ContactsPage = () => {
 
 	return (
 		<div>
-			<h1>Your contacts</h1>
+			<h1>Your contacts:</h1>
 			<ContactForm />
 			<div>{isLoading && "Request in progress..."}</div>
 			<SearchBox />
