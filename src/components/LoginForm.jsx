@@ -28,7 +28,7 @@ const LoginForm = () => {
 
 	return (
 		<div>
-			<h2>Login,please!</h2>
+			<h2>Login,please!!</h2>
 			<Formik
 				initialValues={{ email: "", password: "" }}
 				validationSchema={validationSchema}
